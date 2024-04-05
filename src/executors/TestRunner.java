@@ -148,31 +148,29 @@ public class TestRunner {
     public static void checkCountBeforeAfter(Method[] allMethods) {
         System.out.println("Проверка кол-ва методов Before и After");
 
-        int countBefore = getCountOfAnnotatedMethods(allMethods, BeforeSuite.class);
-
-        int countAfter = getCountOfAnnotatedMethods(allMethods, AfterSuite.class);
-
-        if (countBefore > 1) {
-            System.out.println("Методов с аннотацией BeforeSuite больше одного (ожидается 1)");
-            return;
-        }
-
-        if (countAfter > 1) {
-            System.out.println("Методов с аннотацией AfterSuite больше одного (ожидается 1)");
-            return;
-        }
+        checkCountOfAnnotatedMethods(allMethods);
 
         System.out.println("Проверка прошла успешно");
     }
 
-    public static int getCountOfAnnotatedMethods(Method[] allMethods, Class annotatedClass) {
+    public static void checkCountOfAnnotatedMethods(Method[] allMethods) {
         int countOfMethods = 0;
         for (Method m : allMethods) {
-            if (m.isAnnotationPresent(annotatedClass)) {
+            if (m.isAnnotationPresent(BeforeSuite.class)) {
                 countOfMethods++;
+                if (countOfMethods > 1) {
+                    System.out.println("Методов с аннотацией BeforeSuite больше одного (ожидается 1)");
+                    return;
+                }
+            }
+            if (m.isAnnotationPresent(AfterSuite.class)) {
+                countOfMethods++;
+                if (countOfMethods > 1) {
+                    System.out.println("Методов с аннотацией AfterSuite больше одного (ожидается 1)");
+                    return;
+                }
             }
         }
-        return countOfMethods;
     }
 
 }
