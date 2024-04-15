@@ -10,7 +10,7 @@ public class TestPool {
         MyThreadPool myPool = new MyThreadPool(4);
 
         for (int i = 0; i < 5; i++) {
-            Task task = new Task();
+            Task task = new Task(i);
             myPool.execute(task);
         }
 
