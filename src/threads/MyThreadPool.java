@@ -1,10 +1,7 @@
 package threads;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MyThreadPool implements Executor {
@@ -13,19 +10,19 @@ public class MyThreadPool implements Executor {
 
     private final LinkedList<Runnable> queue;
 
+    private Thread[] workers;
+
     public MyThreadPool(int count) {
         this.count = count;
         queue = new LinkedList<>();
+        workers = new Thread[count];
 
-        final ReentrantLock mainLock = new ReentrantLock();
-        mainLock.lock();
-        try {
-            for (int i = 0; i < count; i++) {
-                new Thread(new Worker()).start();
-            }
-        } finally {
-            mainLock.unlock();
+        for (int i = 0; i < count; i++) {
+            Worker w = new Worker();
+            workers[i] = new Thread(w);
+            workers[i].start();
         }
+
     }
 
     public void execute(Runnable runnableThread) {
@@ -41,7 +38,12 @@ public class MyThreadPool implements Executor {
     }
 
     public void shutdown() {
+        if (!isRunning) { return; }
         isRunning = false;
+
+        for (Thread w : workers) {
+            w.interrupt();
+        }
     }
 
     private final class Worker implements Runnable {
